@@ -2,24 +2,32 @@ const ErrorResponse = require("../utils/errorResponse")
 const Bootcamps = require('../models/Bootcamps');
 const asyncHandler = require('../middleware/async');
 const geocoder = require("../utils/geocoder");
+const { query } = require("express");
 
 // desc         Get all bootcamps
 // @route       GET /api/v1/bootcamps
 // @access      Public 
 
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-    try {
-        const bootcamps = await Bootcamps.find();
+    
+        let query;
+
+        let queryStr = JSON.stringify(req.query);
+
+        queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+        
+        console.log(queryStr);
+
+        query = Bootcamps.find(JSON.parse(queryStr));
+        
+        const bootcamps = await query;
 
         res.status(200).json({ success: true, count: bootcamps.length, data: bootcamps });
-    } catch (err) {
-        res.status(400).json({ success: false });
-    }
 });
 
 // desc         Get single bootcamp
 // @route       GET /api/v1/bootcamps/:id
-// access       Public 
+// @access       Public 
 
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamps.findById(req.params.id);
@@ -33,7 +41,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 
 // desc         Create new bootcamp 
 // @route       POST /api/v1/bootcamps
-// access       Private
+// @access       Private
 
 exports.postBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamps.create(req.body);
@@ -43,7 +51,7 @@ exports.postBootcamp = asyncHandler(async (req, res, next) => {
 
 // desc         Update single bootcamp
 // @route       PUT /api/v1/bootcamp/:id
-// access       Private
+// @access       Private
 
 exports.putBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamps.findByIdAndUpdate(req.params.id, req.body, {
@@ -60,7 +68,7 @@ exports.putBootcamp = asyncHandler(async (req, res, next) => {
 
 // desc         Delete single bootcamp 
 // @route       DELETE /api/v1/bootcamp/:id
-// access       Private
+// @access       Private
 
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamps.findByIdAndDelete(req.params.id);
