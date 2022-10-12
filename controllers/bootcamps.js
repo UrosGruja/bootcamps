@@ -4,7 +4,7 @@ const asyncHandler = require('../middleware/async');
 const geocoder = require("../utils/geocoder");
 const { query } = require("express");
 
-// desc         Get all bootcamps
+// @desc        Get all bootcamps
 // @route       GET /api/v1/bootcamps
 // @access      Public 
 
@@ -28,7 +28,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     // Finding resource
-    query = Bootcamps.find(JSON.parse(queryStr));
+    query = Bootcamps.find(JSON.parse(queryStr)).populate('courses');
 
     // Select fields 
     if (req.query.select) {
@@ -75,7 +75,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, count: bootcamps.length, pagination, data: bootcamps });
 });
 
-// desc         Get single bootcamp
+// @desc         Get single bootcamp
 // @route       GET /api/v1/bootcamps/:id
 // @access       Public 
 
@@ -89,7 +89,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: bootcamp });
 });
 
-// desc         Create new bootcamp 
+// @desc         Create new bootcamp 
 // @route       POST /api/v1/bootcamps
 // @access       Private
 
@@ -99,7 +99,7 @@ exports.postBootcamp = asyncHandler(async (req, res, next) => {
 
 });
 
-// desc         Update single bootcamp
+// @desc         Update single bootcamp
 // @route       PUT /api/v1/bootcamp/:id
 // @access       Private
 
@@ -121,11 +121,12 @@ exports.putBootcamp = asyncHandler(async (req, res, next) => {
 // @access       Private
 
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-    const bootcamp = await Bootcamps.findByIdAndDelete(req.params.id);
+    const bootcamp = await Bootcamps.findById(req.params.id);
 
     if (!bootcamp) {
         return next(new ErrorResponse(`Boorcamp not found with id of ${req.params.id}`, 404));
     }
+    bootcamp.remove();
 
     res.status(200).json({ success: true, data: {} });
 });
