@@ -105,6 +105,8 @@ const bootcampsSchema = new mongoose.Schema({
     }
 },
 {
+// Mandatory for populate
+
     toJSON: {virtuals: true},
     toObject: {virtuals: true}
 });
