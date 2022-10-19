@@ -1,7 +1,6 @@
 const ErrorResponse = require("../utils/errorResponse");
 const User = require('../models/User');
 const asyncHandler = require('../middleware/async');
-const protect = require('../middleware/auth');
 
 // @desc        Register user
 // @route       POST /api/v1/aut/register
@@ -85,7 +84,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: user,
+        data: user 
     });
 });
 
